@@ -1,6 +1,5 @@
-// =========================================
+
 // GET HTML ELEMENTS
-// =========================================
 
 const playerDice =
     document.getElementById("playerDice");
@@ -23,10 +22,8 @@ const rollButton =
 const resetButton =
     document.getElementById("resetBtn");
 
-
-// =========================================
 // GAME VARIABLES
-// =========================================
+
 
 let playerScore = 0;
 let computerScore = 0;
@@ -36,19 +33,9 @@ let gameOver = false;
 // Used to cancel old animations/timers
 let roundId = 0;
 
-
-// =========================================
-// INITIAL DICE
-// =========================================
-
 playerDice.dataset.number = 1;
-
 computerDice.dataset.number = 1;
 
-
-// =========================================
-// ROLL DICE
-// =========================================
 
 function rollDice() {
 
@@ -58,19 +45,13 @@ function rollDice() {
         return;
     }
 
-
     // Disable roll button
-
     rollButton.disabled = true;
 
-
     // Create a unique ID for this round
-
     const currentRound = ++roundId;
 
-
     // Display message
-
     resultElement.textContent =
         "Rolling...";
 
@@ -83,13 +64,7 @@ function rollDice() {
     const computerNumber =
         Math.floor(Math.random() * 6) + 1;
 
-
-    // =====================================
-    // PLAYER DICE
-    // =====================================
-
     playerDice.classList.add("rolling");
-
 
     setTimeout(() => {
 
@@ -99,21 +74,14 @@ function rollDice() {
             return;
         }
 
-
         // Show player result
 
         playerDice.dataset.number =
             playerNumber;
 
-
         playerDice.classList.remove(
             "rolling"
         );
-
-
-        // =================================
-        // COMPUTER DELAY
-        // =================================
 
         setTimeout(() => {
 
@@ -123,13 +91,10 @@ function rollDice() {
                 return;
             }
 
-
             // Computer starts rolling
-
             computerDice.classList.add(
                 "rolling"
             );
-
 
             setTimeout(() => {
 
@@ -151,10 +116,8 @@ function rollDice() {
                 );
 
 
-                // =================================
                 // CHECK ROUND WINNER
-                // =================================
-
+  
                 if (
                     playerNumber >
                     computerNumber
@@ -186,20 +149,12 @@ function rollDice() {
                 }
 
 
-                // =================================
-                // UPDATE SCORE
-                // =================================
-
                 playerScoreElement.textContent =
                     "Score: " + playerScore;
 
                 computerScoreElement.textContent =
                     "Score: " + computerScore;
 
-
-                // =================================
-                // CHECK GAME OVER
-                // =================================
 
                 if (playerScore >= 10) {
 
@@ -235,10 +190,6 @@ function rollDice() {
     }, 800);
 }
 
-
-// =========================================
-// RESET GAME
-// =========================================
 
 function resetGame() {
 
@@ -296,11 +247,6 @@ function resetGame() {
 
     rollButton.disabled = false;
 }
-
-
-// =========================================
-// BUTTON EVENTS
-// =========================================
 
 rollButton.addEventListener(
     "click",
