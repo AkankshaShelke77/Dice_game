@@ -1,72 +1,314 @@
-const dicePatterns = {
-    1: [4],
-    2: [0, 8],
-    3: [0, 4, 8],
-    4: [0, 2, 6, 8],
-    5: [0, 2, 4, 6, 8],
-    6: [0, 2, 3, 5, 6, 8]
-};
+// =========================================
+// GET HTML ELEMENTS
+// =========================================
 
-// Generate dots on a face
-function createDots(face, num) {
-    face.innerHTML = '';
-    const positions = Array(9).fill(false);
-    dicePatterns[num].forEach(i => positions[i] = true);
-    positions.forEach(pos => {
-        const dot = document.createElement('div');
-        dot.classList.add('dot');
-        if (!pos) dot.style.visibility = 'hidden';
-        face.appendChild(dot);
-    });
+const playerDice =
+    document.getElementById("playerDice");
+
+const computerDice =
+    document.getElementById("computerDice");
+
+const playerScoreElement =
+    document.getElementById("playerScore");
+
+const computerScoreElement =
+    document.getElementById("computerScore");
+
+const resultElement =
+    document.getElementById("result");
+
+const rollButton =
+    document.getElementById("rollBtn");
+
+const resetButton =
+    document.getElementById("resetBtn");
+
+
+// =========================================
+// GAME VARIABLES
+// =========================================
+
+let playerScore = 0;
+let computerScore = 0;
+
+let gameOver = false;
+
+// Used to cancel old animations/timers
+let roundId = 0;
+
+
+// =========================================
+// INITIAL DICE
+// =========================================
+
+playerDice.dataset.number = 1;
+
+computerDice.dataset.number = 1;
+
+
+// =========================================
+// ROLL DICE
+// =========================================
+
+function rollDice() {
+
+    // Don't allow rolling after game over
+
+    if (gameOver) {
+        return;
+    }
+
+
+    // Disable roll button
+
+    rollButton.disabled = true;
+
+
+    // Create a unique ID for this round
+
+    const currentRound = ++roundId;
+
+
+    // Display message
+
+    resultElement.textContent =
+        "Rolling...";
+
+
+    // Generate random values
+
+    const playerNumber =
+        Math.floor(Math.random() * 6) + 1;
+
+    const computerNumber =
+        Math.floor(Math.random() * 6) + 1;
+
+
+    // =====================================
+    // PLAYER DICE
+    // =====================================
+
+    playerDice.classList.add("rolling");
+
+
+    setTimeout(() => {
+
+        // Stop if this round was cancelled
+
+        if (currentRound !== roundId) {
+            return;
+        }
+
+
+        // Show player result
+
+        playerDice.dataset.number =
+            playerNumber;
+
+
+        playerDice.classList.remove(
+            "rolling"
+        );
+
+
+        // =================================
+        // COMPUTER DELAY
+        // =================================
+
+        setTimeout(() => {
+
+            // Stop if this round was cancelled
+
+            if (currentRound !== roundId) {
+                return;
+            }
+
+
+            // Computer starts rolling
+
+            computerDice.classList.add(
+                "rolling"
+            );
+
+
+            setTimeout(() => {
+
+                // Stop if this round was cancelled
+
+                if (currentRound !== roundId) {
+                    return;
+                }
+
+
+                // Show computer result
+
+                computerDice.dataset.number =
+                    computerNumber;
+
+
+                computerDice.classList.remove(
+                    "rolling"
+                );
+
+
+                // =================================
+                // CHECK ROUND WINNER
+                // =================================
+
+                if (
+                    playerNumber >
+                    computerNumber
+                ) {
+
+                    playerScore++;
+
+                    resultElement.textContent =
+                        "🎉 You Win This Round!";
+
+                }
+
+                else if (
+                    computerNumber >
+                    playerNumber
+                ) {
+
+                    computerScore++;
+
+                    resultElement.textContent =
+                        "💻 Computer Wins This Round!";
+
+                }
+
+                else {
+
+                    resultElement.textContent =
+                        "🤝 It's a Draw!";
+                }
+
+
+                // =================================
+                // UPDATE SCORE
+                // =================================
+
+                playerScoreElement.textContent =
+                    "Score: " + playerScore;
+
+                computerScoreElement.textContent =
+                    "Score: " + computerScore;
+
+
+                // =================================
+                // CHECK GAME OVER
+                // =================================
+
+                if (playerScore >= 10) {
+
+                    gameOver = true;
+
+                    resultElement.textContent =
+                        "🏆 Congratulations! You Won the Game!";
+
+                    rollButton.disabled = true;
+
+                }
+
+                else if (computerScore >= 10) {
+
+                    gameOver = true;
+
+                    resultElement.textContent =
+                        "😢 Computer Won the Game!";
+
+                    rollButton.disabled = true;
+
+                }
+
+                else {
+
+                    rollButton.disabled = false;
+                }
+
+            }, 800);
+
+        }, 300);
+
+    }, 800);
 }
 
-// Map dice number to cube rotation
-function getRotation(num) {
-    switch(num) {
-        case 1: return {x: 0, y: 0};
-        case 2: return {x: -90, y: 0};
-        case 3: return {x: 0, y: -90};
-        case 4: return {x: 0, y: 90};
-        case 5: return {x: 90, y: 0};
-        case 6: return {x: 180, y: 0};
-    }
+
+// =========================================
+// RESET GAME
+// =========================================
+
+function resetGame() {
+
+    // Invalidate the current round
+
+    roundId++;
+
+
+    // Reset scores
+
+    playerScore = 0;
+
+    computerScore = 0;
+
+
+    // Reset game state
+
+    gameOver = false;
+
+
+    // Remove animations
+
+    playerDice.classList.remove(
+        "rolling"
+    );
+
+    computerDice.classList.remove(
+        "rolling"
+    );
+
+
+    // Reset dice
+
+    playerDice.dataset.number = 1;
+
+    computerDice.dataset.number = 1;
+
+
+    // Reset score display
+
+    playerScoreElement.textContent =
+        "Score: 0";
+
+    computerScoreElement.textContent =
+        "Score: 0";
+
+
+    // Reset result
+
+    resultElement.textContent =
+        "Click Roll Dice to Start!";
+
+
+    // Enable roll button
+
+    rollButton.disabled = false;
 }
 
-const players = [0,1,2,3];
-let currentPlayer = 0;
 
-// Pre-fill all faces of all cubes with dots 1-6
-players.forEach(p => {
-    const cube = document.querySelector(`#cube${p}`);
-    createDots(cube.querySelector('.front'), 1);
-    createDots(cube.querySelector('.back'), 6);
-    createDots(cube.querySelector('.right'), 3);
-    createDots(cube.querySelector('.left'), 4);
-    createDots(cube.querySelector('.top'), 2);
-    createDots(cube.querySelector('.bottom'), 5);
-});
+// =========================================
+// BUTTON EVENTS
+// =========================================
 
-document.getElementById('rollBtn').addEventListener('click', () => {
-    const cube = document.querySelector(`#cube${currentPlayer}`);
-    const roll = Math.floor(Math.random() * 6) + 1;
+rollButton.addEventListener(
+    "click",
+    rollDice
+);
 
-    // Get rotation to show correct face
-    const rot = getRotation(roll);
 
-    // Add some random spins for visual effect
-    const extraX = Math.floor(Math.random()*4)*360;
-    const extraY = Math.floor(Math.random()*4)*360;
-    cube.style.transform = `rotateX(${rot.x + extraX}deg) rotateY(${rot.y + extraY}deg)`;
-
-    // Move to next player
-    document.getElementById(`p${currentPlayer}`).classList.remove('active');
-    currentPlayer++;
-    if (currentPlayer >= players.length) {
-        document.getElementById('status').innerText = "Game Over!";
-        document.getElementById('rollBtn').style.display = 'none';
-        document.getElementById('resetBtn').style.display = 'inline';
-    } else {
-        document.getElementById(`p${currentPlayer}`).classList.add('active');
-        document.getElementById('status').innerText = `Player ${currentPlayer+1}'s Turn`;
-    }
-});
+resetButton.addEventListener(
+    "click",
+    resetGame
+);
